@@ -1,8 +1,8 @@
-import { StreamChat, TextComposer } from 'stream-chat';
+import { StreamChat } from 'stream-chat';
 import { ENV } from './env.js';
 
 
-const streamClient = StreamChat.getInstance(ENV.STREAMING_API_KEY, ENV.STREAMING_API_SECRET);
+const streamClient = StreamChat.getInstance(ENV.STREAM_API_KEY, ENV.STREAM_API_SECRET);
 
 export const upsertStreamUser = async (userData) => {
     try {
