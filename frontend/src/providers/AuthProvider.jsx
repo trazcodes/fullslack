@@ -8,7 +8,7 @@ export default function AuthProvider({children}){
     const {getToken}= useAuth;
 
     useEffect(()=>{
-        const interseptor = axiosInstance.interceptors.request.use(
+        const interceptor = axiosInstance.interceptors.request.use(
             async (config) =>{
                 try {
                     const token = await getToken();
@@ -27,7 +27,7 @@ export default function AuthProvider({children}){
             }
         );
         // cleanup for performance and avoiding memory leaks
-        return ()=> axiosInstance.interceptors.request.eject(interseptor);
+        return ()=> axiosInstance.interceptors.request.eject(interceptor);
     },[getToken])
 
     return <AuthContext.Provider value={{}}>{children}</AuthContext.Provider>
