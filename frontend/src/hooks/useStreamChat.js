@@ -12,36 +12,46 @@ export const useStreamChat = () => {
     const [chatClient, setChatClient] = useState(null);
 
     // fetch steam token using react-query
-    const { data: tokenData, isLoading: tokenLoading, error: tokenError } = useQuery({
-        queryKey:["streamToken"],
+    const { data: tokenData, isLoading, error } = useQuery({
+        queryKey: ["streamToken"],
         queryFn: getStreamToken,
         enable: !!user?.id,
     });
     //init stream chat client
-    useEffect(()=>{
-        const initChat = async ()=>{
-            if(!tokenData?.token || !user) return;
+    useEffect(() => {
+        if (!tokenData?.token || !user?.id || !STREAM_API_KEY) return;
+
+        const client = StreamChat.getInstance(STREAM_API_KEY);
+        let cancelled = false;
+
+
+        const connect = async () => {
             try {
-                const client = StreamChat.getInstance(STREAM_API_KEY)
                 await client.connectUser({
                     id: user.id,
-                    name: user.fullName,
-                    image: user.imageUrl
-                })
-                setChatClient(client)
+                    name:
+                        user.fullName ?? user.username ?? user.primaryEmailAddress?.emailAddress ?? user.id,
+                    image: user.imageUrl ?? undefined,
+                },
+                    tokenData.token
+                );
+                if (!cancelled) {
+                    setChatClient(client);
+                }
             } catch (error) {
-                console.log("Error connecting to stream",error);
-                
+                console.log("Error connecting to stream", error);
+
             }
         };
 
-        initChat();
+        connect();
 
         // cleanup
-        return ()=>{
-            if(chatClient) chatClient.disconnectUser();
-        }
-    },[tokenData, user, chatClient])
+        return () => {
+            cancelled = true;
+            client.disconnectUser();
+        };
+    }, [tokenData?.token, user?.id])
 
-    return {chatClient, isLoading:tokenLoading, error: tokenError}
-}
+    return { chatClient, isLoading, error }
+};
