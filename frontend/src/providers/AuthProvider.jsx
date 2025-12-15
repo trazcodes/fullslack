@@ -1,5 +1,5 @@
 import { useAuth } from "@clerk/clerk-react";
-import { useEffect } from "react";
+import { createContext, useEffect } from "react";
 import { axiosInstance } from "../lib/axios";
 
 const AuthContext = createContext({});
