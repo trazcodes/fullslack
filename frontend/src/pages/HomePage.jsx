@@ -50,7 +50,7 @@ function HomePage() {
               {/* HEADER */}
               <div className="team-channel-list__header gap-4">
                 <div className="brand-container">
-                  <img src="/logo.png" alt="Logo" className="brand-logo" />
+                  <img src="/slack-logo.png" alt="Logo" className="brand-logo" />
                   <span className="brand-name">Fullslack</span>
                 </div>
                 <div className="user-button-wrapper">
