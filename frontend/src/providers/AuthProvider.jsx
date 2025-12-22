@@ -11,7 +11,7 @@ export default function AuthProvider({children}){
         const interceptor = axiosInstance.interceptors.request.use(
             async (config) =>{
                 try {
-                    const token = await getToken();
+                    const token = await getToken;
                     if(token) config.headers.Authorization = `Bearer ${token}`;
                 } catch (error) {
                     if(error.message?.includes("auth") || error.message?.includes("token")){
