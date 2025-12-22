@@ -27,7 +27,11 @@ export const deleteStreamUser = async (userId) => {
 
 export const generateStreamToken = (userId) => {
     try {
+        console.log("Into generatetoken backend function", userId);
+        
         const userIdString = userId.toString();
+        console.log("token cretaed for useridstring");
+        
         return streamClient.createToken(userIdString);
     } catch (error) {
         console.log("Error creating Stream token:", error);

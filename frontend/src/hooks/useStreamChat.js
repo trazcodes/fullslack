@@ -10,15 +10,20 @@ const STREAM_API_KEY = import.meta.env.VITE_STREAM_API_KEY;
 export const useStreamChat = () => {
     const { user } = useUser();
     const [chatClient, setChatClient] = useState(null);
-
+    // -----------------------------------------
+    console.log(user, chatClient);
+    
     // fetch steam token using react-query
     const { data: tokenData, isLoading, error } = useQuery({
-        queryKey: ["streamToken"],
+        queryKey: ["streamToken", user?.id],
         queryFn: getStreamToken,
-        enable: !!user?.id,
+        enabled: !!user?.id,
     });
     //init stream chat client
     useEffect(() => {
+        // =============================================
+        console.log(tokenData?.token, user?.id, STREAM_API_KEY);
+        
         if (!tokenData?.token || !user?.id || !STREAM_API_KEY) return;
 
         const client = StreamChat.getInstance(STREAM_API_KEY);
@@ -37,6 +42,8 @@ export const useStreamChat = () => {
                 );
                 if (!cancelled) {
                     setChatClient(client);
+                    console.log(client);
+                    
                 }
             } catch (error) {
                 console.log("Error connecting to stream", error);
