@@ -14,8 +14,10 @@ import {
   Thread,
   Window,
 } from "stream-chat-react";
-import { PlusIcon } from 'lucide-react';
+import { HashIcon, PlusIcon, UsersIcon } from 'lucide-react';
 import CreateChannelModal from '../components/CreateChannelModal';
+import CustomChannelPreview from '../components/CustomChannelPreview';
+import UsersList from '../components/UsersList';
 
 function HomePage() {
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
@@ -27,8 +29,8 @@ function HomePage() {
   // set active channel from URL params
   useEffect(() => {
     if (chatClient) {
-      console.log( chatClient);
-      
+      console.log(chatClient);
+
       const channelId = searchParams.get("channel");
       if (channelId) {
         const channel = chatClient.channel("messaging", channelId);
@@ -60,12 +62,50 @@ function HomePage() {
               {/* CHANNELS LIST */}
               <div className='team-channel-list__content'>
                 <div className="create-channel-section">
-                  <button onClick={()=>setIsCreateModalOpen(true)} className='create-channel-btn'>
-                    <PlusIcon className='size-4'/>
+                  <button onClick={() => setIsCreateModalOpen(true)} className='create-channel-btn'>
+                    <PlusIcon className='size-4' />
                     <span>Create Channel</span>
                   </button>
                 </div>
+
                 {/* CHANNEL LIST */}
+                <ChannelList
+                  filters={{ members: { $in: [chatClient?.user.id] } }}
+                  options={{ state: true, watch: true }}
+                  Preview={({ channel }) => (
+                    <CustomChannelPreview
+                      channel={channel}
+                      activeChannel={activeChannel}
+                      setActiveChannel={(channel) => setSearchParams({ channel: channel.id })}
+                    />
+                  )}
+
+                  List={({ children, loading, error }) => (
+                    <div className="channel-sections">
+                      <div className="section-header">
+                        <div className="section-title">
+                          <HashIcon className="size-4" />
+                          <span>Channels</span>
+                        </div>
+                      </div>
+
+                      {/* todos: add better components here instead of just a simple text  */}
+                      {loading && <div className="loading-message">Loading channels...</div>}
+                      {error && <div className="error-message">Error loading channels</div>}
+
+                      <div className="channels-list">{children}</div>
+
+                      <div className="section-header direct-messages">
+                        <div className="section-title">
+                          <UsersIcon className="size-4" />
+                          <span>Direct Messages</span>
+                        </div>
+                      </div>
+                      <UsersList activeChannel={activeChannel} />
+                    </div>
+                  )}
+
+                />
 
               </div>
             </div>
@@ -75,17 +115,17 @@ function HomePage() {
             <Channel channel={activeChannel}>
               <Window>
                 {/* <CustomChannelHeader/>   */}
-                <MessageList/>
-                <MessageInput/>
+                <MessageList />
+                <MessageInput />
               </Window>
-              <Thread/>
+              <Thread />
             </Channel>
           </div>
         </div>
 
-        {isCreateModalOpen &&(
+        {isCreateModalOpen && (
           <CreateChannelModal
-              onClose={()=> setIsCreateModalOpen(false)}
+            onClose={() => setIsCreateModalOpen(false)}
           />
         )}
       </Chat>
