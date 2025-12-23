@@ -4,7 +4,7 @@ import React, { useCallback } from 'react'
 import { useSearchParams } from 'react-router';
 import { useChatContext } from 'stream-chat-react'
 
-const UsersList = (activeChannel) => {
+const UsersList = ({activeChannel}) => {
     const { client } = useChatContext();
     const [_, setSearchParams] = useSearchParams();
 
@@ -61,7 +61,7 @@ const UsersList = (activeChannel) => {
                     <button
                         key={user.id}
                         onClick={() => startDirectMessage(user)}
-                        className={`str-chat__channel-preview-messenger  ${isActive && "bg-black/20! !hover:bg-black/20 border-l-8 border-purple-500 shadow-lg0"
+                        className={`str-chat__channel-preview-messenger  ${isActive && "!bg-black/20 !hover:bg-black/20 border-l-8 border-purple-500 shadow-lg0"
                             }`}
                     >
                         <div className="flex items-center gap-2 w-full">
@@ -91,9 +91,10 @@ const UsersList = (activeChannel) => {
                             </span>
 
                             {unreadCount > 0 && (
-                                <span className="flex items-center justify-center ml-2 size-4 text-xs rounded-full bg-red-500 ">
+                                <span className="flex items-center justify-center ml-2 size-5 text-xs font-bold text-white rounded-full bg-red-500">
                                     {unreadCount}
                                 </span>
+
                             )}
                         </div>
                     </button>
