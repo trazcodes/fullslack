@@ -1,0 +1,14 @@
+version: "3.8"
+
+services:
+  backend:
+    container_name: fullslack-backend
+    image: fullslack-backend
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    ports:
+      - "8080:8080"
+    env_file:
+      - ./backend/.env
+    restart: unless-stopped
