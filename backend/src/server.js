@@ -25,7 +25,7 @@ app.use("/api/chat", (req, res, next) => {
 
 
 app.get('/', (req, res) => {
-    res.send("Hello from Express server! 123");
+    res.send("Hello from Express server! - CD Implemented");
 })
 
 const startServer = async () => {
