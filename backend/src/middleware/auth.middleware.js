@@ -1,7 +1,9 @@
 export const protectRoute = (req, res, next) => {
   console.log("into protectRoute");
 
-  if (!req.auth || !req.auth.userId) {
+  const auth = req.auth(); // ✅ correct Clerk API
+
+  if (!auth || !auth.userId) {
     return res
       .status(401)
       .json({ message: "Unauthorized - you must be logged in" });
@@ -9,8 +11,6 @@ export const protectRoute = (req, res, next) => {
 
   console.log("authorized");
 
-  // Attach userId for downstream controllers
-  req.userId = req.auth.userId;
-
+  req.userId = auth.userId;
   next();
 };
