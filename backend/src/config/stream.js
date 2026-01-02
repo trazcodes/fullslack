@@ -1,47 +1,48 @@
-import { StreamChat } from 'stream-chat';
-import { ENV } from './env.js';
+import { StreamChat } from "stream-chat";
+import { ENV } from "./env.js";
 
-
-const streamClient = StreamChat.getInstance(ENV.STREAM_API_KEY, ENV.STREAM_API_SECRET);
+const streamClient = StreamChat.getInstance(
+  ENV.STREAM_API_KEY,
+  ENV.STREAM_API_SECRET
+);
 
 export const upsertStreamUser = async (userData) => {
-    try {
-        await streamClient.upsertUser(userData);
-        console.log("Stream user upserted successfully:0, userData.name");
-        return userData
-    } catch (error) {
-        console.error("Error upserting Stream user:", error);
-    }
-}
+  try {
+    await streamClient.upsertUser(userData);
+    console.log("Stream user upserted successfully:", userData.name);
+    return userData;
+  } catch (error) {
+    console.error("Error upserting Stream user:", error);
+    throw error;
+  }
+};
 
 export const deleteStreamUser = async (userId) => {
-    try {
-        await streamClient.deleteUser(userId);
-        console.log("Stream user deleted successfully:", userId);
-
-    } catch (error) {
-        console.log("Error deleting Stream user:", error);
-
-    }
-}
+  try {
+    await streamClient.deleteUser(userId);
+    console.log("Stream user deleted successfully:", userId);
+  } catch (error) {
+    console.error("Error deleting Stream user:", error);
+    throw error;
+  }
+};
 
 export const generateStreamToken = (userId) => {
-    try {
-        console.log("Into generatetoken backend function", userId);
-        
-        const userIdString = userId.toString();
-        console.log("token cretaed for useridstring");
-        
-        return streamClient.createToken(userIdString);
-    } catch (error) {
-        console.log("Error creating Stream token:", error);
-        return null;
-    }
-}
+  if (!userId) {
+    throw new Error("UserId is required to generate Stream token");
+  }
+
+  return streamClient.createToken(userId.toString());
+};
 
 export const addUserToPublicChannels = async (newUserId) => {
-    const publicChannels = await streamClient.queryChannels({discoverable: true});
-    for (const channel of publicChannels){
-        await channel.addMembers([newUserId]);
-    }
-}
+  const publicChannels = await streamClient.queryChannels(
+    { discoverable: true },
+    {},
+    { watch: false }
+  );
+
+  for (const channel of publicChannels) {
+    await channel.addMembers([newUserId]);
+  }
+};
