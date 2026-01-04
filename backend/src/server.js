@@ -13,7 +13,7 @@ app.use(express.json());
 app.use(cors({
     origin: ["http://localhost:5173", 
             "http://13.205.127.170",
-            "https://your-vercel-app.vercel.app"
+            "https://fullslack.vercel.app"
         ],
     credentials:true,
 }));
