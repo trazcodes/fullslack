@@ -1,64 +1,78 @@
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 import { StreamChat } from "stream-chat";
 import { useUser } from "@clerk/clerk-react";
 import { useQuery } from "@tanstack/react-query";
 import { getStreamToken } from "../lib/api";
 
-
 const STREAM_API_KEY = import.meta.env.VITE_STREAM_API_KEY;
 
 export const useStreamChat = () => {
-    const { user } = useUser();
-    const [chatClient, setChatClient] = useState(null);
-    // -----------------------------------------
-    console.log(user, chatClient);
-    
-    // fetch steam token using react-query
-    const { data: tokenData, isLoading, error } = useQuery({
-        queryKey: ["streamToken", user?.id],
-        queryFn: getStreamToken,
-        enabled: !!user?.id,
-    });
-    //init stream chat client
-    useEffect(() => {
-        // =============================================
-        console.log(tokenData?.token, user?.id, STREAM_API_KEY);
-        
-        if (!tokenData?.token || !user?.id || !STREAM_API_KEY) return;
+  const { user, isLoaded } = useUser();
+  const [chatClient, setChatClient] = useState(null);
 
-        const client = StreamChat.getInstance(STREAM_API_KEY);
-        let cancelled = false;
+  // Fetch Stream token
+  const {
+    data: tokenData,
+    isLoading,
+    error,
+  } = useQuery({
+    queryKey: ["streamToken", user?.id],
+    queryFn: getStreamToken,
+    enabled: isLoaded && !!user?.id,
+    retry: false,
+  });
 
+  useEffect(() => {
+    if (
+      !isLoaded ||
+      !user?.id ||
+      !tokenData?.token ||
+      !STREAM_API_KEY ||
+      chatClient
+    ) {
+      return;
+    }
 
-        const connect = async () => {
-            try {
-                await client.connectUser({
-                    id: user.id,
-                    name:
-                        user.fullName ?? user.username ?? user.primaryEmailAddress?.emailAddress ?? user.id,
-                    image: user.imageUrl ?? undefined,
-                },
-                    tokenData.token
-                );
-                if (!cancelled) {
-                    setChatClient(client);
-                    console.log(client);
-                    
-                }
-            } catch (error) {
-                console.log("Error connecting to stream", error);
+    const client = StreamChat.getInstance(STREAM_API_KEY);
+    let isCancelled = false;
 
-            }
-        };
+    const connectUser = async () => {
+      try {
+        await client.connectUser(
+          {
+            id: user.id,
+            name:
+              user.fullName ||
+              user.username ||
+              user.primaryEmailAddress?.emailAddress ||
+              user.id,
+            image: user.imageUrl,
+          },
+          tokenData.token
+        );
 
-        connect();
+        if (!isCancelled) {
+          setChatClient(client);
+        }
+      } catch (err) {
+        console.error("❌ Stream connect failed:", err);
+      }
+    };
 
-        // cleanup
-        return () => {
-            cancelled = true;
-            client.disconnectUser();
-        };
-    }, [tokenData?.token, user?.id])
+    connectUser();
 
-    return { chatClient, isLoading, error }
+    return () => {
+      isCancelled = true;
+
+      if (client.userID) {
+        client.disconnectUser();
+      }
+    };
+  }, [isLoaded, user?.id, tokenData?.token]);
+
+  return {
+    chatClient,
+    isLoading,
+    error,
+  };
 };
