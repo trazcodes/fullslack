@@ -8,7 +8,7 @@ function AuthPage() {
       <div className="auth-left">
         <div className="auth-hero">
           <div className="brand-container">
-            <img src='/logo(1).png' alt='Fullslack' className='brand-logo'/>
+            <img src='/slack-logo.png' alt='Fullslack' className='brand-logo'/>
             <span className='brand-name'>Fullslack</span>
           </div>
 
