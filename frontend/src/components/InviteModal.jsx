@@ -4,7 +4,7 @@ import { useChatContext } from 'stream-chat-react';
 import { XIcon } from 'lucide-react';
 
 
-const InviteModal = ({channel, onClose}) => {
+const InviteModal = ({ channel, onClose }) => {
     const { client } = useChatContext();
 
     const [users, setUsers] = useState([]);
@@ -23,7 +23,9 @@ const InviteModal = ({channel, onClose}) => {
                 const res = await client.queryUsers({
                     id: { $nin: members }
                 }, { name: 1 }, { limit: 50 });
-                setUsers(res.users);
+                
+                const usersOnly = res.users.filter(user => !user.id.startsWith("recording-"));
+                setUsers(usersOnly);
             } catch (err) {
                 console.log("Error", err);
                 setError("Failed to load users. Please try again.");
