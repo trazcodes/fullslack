@@ -11,11 +11,11 @@ const app = express();
 
 app.use(express.json());
 app.use(cors({
-    origin: ["http://localhost:5173", 
-            "http://13.205.127.170",
-            "https://fullslack.duckdns.org"
-        ],
-    credentials:true,
+    origin: ["http://localhost:5173",
+        "http://13.205.127.170",
+        "https://fullslack.duckdns.org"
+    ],
+    credentials: true,
 }));
 app.use(clerkMiddleware());
 
@@ -34,11 +34,10 @@ app.get('/', (req, res) => {
 const startServer = async () => {
     try {
         connectDB();
-        if (ENV.NODE_ENV !== "production") {
-            app.listen(ENV.PORT, () => {
-                console.log("Server is running on port:", ENV.PORT);
-            });
-        }
+        app.listen(ENV.PORT, () => {
+            console.log("Server is running on port:", ENV.PORT);
+        });
+
     } catch (error) {
         console.log("Error starting server", error);
         process.exit(1);
