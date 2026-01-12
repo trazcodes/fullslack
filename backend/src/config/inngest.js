@@ -1,10 +1,14 @@
 import { Inngest } from "inngest";
 import { connectDB } from "./db.js";
-import {User} from "../models/user.model.js";
+import { User } from "../models/user.model.js";
 import { addUserToPublicChannels, deleteStreamUser, upsertStreamUser } from "./stream.js";
 
 // Create a client to send and receive events
-export const inngest = new Inngest({ id: "fullslack" });
+export const inngest = new Inngest({
+    id: "fullslack",
+    eventKey: process.env.INNGEST_EVENT_KEY,
+    signingKey: process.env.INNGEST_SIGNING_KEY,
+});
 
 const syncUser = inngest.createFunction(
     { id: 'sync-user' },
@@ -35,12 +39,12 @@ const syncUser = inngest.createFunction(
 );
 
 const deleteUserFromDB = inngest.createFunction(
-    {id: 'delete-user-from-db'},
-    {event: 'clerk/user.deleted'},
-    async({event})=>{
+    { id: 'delete-user-from-db' },
+    { event: 'clerk/user.deleted' },
+    async ({ event }) => {
         await connectDB();
-        const {id}= event.data;
-        await User.deleteOne({clerkId: id});
+        const { id } = event.data;
+        await User.deleteOne({ clerkId: id });
         await deleteStreamUser(id.toString());
     }
 )
