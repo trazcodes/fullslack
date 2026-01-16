@@ -108,12 +108,13 @@ const CreateChannelModal = ({ onClose }) => {
     setError("");
 
     try {
-      const channelId = channelName
+      const channelId = `${channelName
         .toLowerCase()
         .trim()
         .replace(/\s+/g, "-")
         .replace(/[^a-z0-9-_]/g, "")
-        .slice(0, 20);
+        .slice(0, 16)}-${Date.now().toString().slice(-6)}`;
+
 
       const channelData = {
         name: channelName.trim(),
@@ -193,9 +194,8 @@ const CreateChannelModal = ({ onClose }) => {
                 placeholder="e.g. marketing"
                 autoFocus
                 maxLength={22}
-                className={`form-input ${
-                  error ? "form-input--error" : ""
-                }`}
+                className={`form-input ${error ? "form-input--error" : ""
+                  }`}
               />
             </div>
           </div>
